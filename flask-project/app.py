@@ -1,7 +1,8 @@
+import email
 from flask import Flask, render_template, request, redirect
 from flask_login import current_user, login_user, login_required, logout_user
 from models import db, login, UserModel
-from forms import loginForm
+from forms.login_form import loginForm
 
 #####################################
 #    Flask boilerplate from demo
@@ -44,3 +45,33 @@ def create_table():
     if user is None:
         addUser("lhhung@uw.edu","qwerty")
 
+@app.route("/")
+@login_required
+def display_home():
+    return render_template("home.html")
+
+@app.route("/")
+def redirect_to_login():
+    return redirect("/login")
+
+@app.route("/login", methods=["GET","POST"])
+def login():
+    form=loginForm()
+    if form.validate_on_submit():
+        if request.method == "POST":
+            email=request.form["email"]
+            password=request.form["password"]
+            user = UserModel.query.filter_by(email=email).first()
+            if user is not None and user.check_password(password):
+                login_user(user)
+                return redirect("/home")
+    return render_template("login.html",form=form)
+
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect("/login")
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0',debug=True)
