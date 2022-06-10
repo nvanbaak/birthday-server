@@ -74,19 +74,14 @@ def register():
     if form.validate_on_submit() and request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
-        first_name = request.form["first_name"]
-        last_name = request.form["last_name"]
+        username = request.form["username"]
         user = UserModel.query.filter_by(email=email).first()
         if user is None:
-            add_user(email=email, first_name=first_name, last_name=last_name, password=password)
-            flash(f"Thank you for registering, {first_name}!", 'success')
+            add_user(email=email, username=username, password=password)
             return redirect('/login')
         elif user is not None and user.check_password(password):
-            flash("Welcome back!", 'success')
             login_user(user)
             return redirect('/dashboard')
-        else:
-            flash("User already exists and you used an incorrect password.", 'error')
     return render_template("/user/register.html", form=form)
 
 @app.route("/logout")
