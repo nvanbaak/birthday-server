@@ -1,8 +1,8 @@
 import email
 from flask import Flask, render_template, request, redirect
-from flask_login import current_user, login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user
 from models import db, login, UserModel
-from forms.login_form import loginForm
+from forms.login_form import loginForm, RegisterForm
 
 #####################################
 #    Flask boilerplate from demo
@@ -20,19 +20,20 @@ login.init_app(app)
 #              Setup
 #####################################
 
-def addUser(email, password):
+def add_user(email, username, password):
     """
     Adds a user to the user database if not already present.
     Returns True if operation was successful, False otherwise.
     """
     # check if email exists
-    user = UserModel.query.filter_by(email).first()
+    user = UserModel.query.filter_by(email=email).first()
     if user is None:
 
         # create db entry and submit
         user = UserModel()
         user.set_password(password)
         user.email=email
+        user.name = username
         db.session.add(user)
         db.session.commit()
         return True
@@ -43,7 +44,7 @@ def create_table():
     db.create_all()
     user = UserModel.query.filter_by(email = "lhhung@uw.edu").first()
     if user is None:
-        addUser("lhhung@uw.edu","qwerty")
+        add_user("lhhung@uw.edu","qwerty")
 
 @app.route("/")
 @login_required
@@ -67,6 +68,26 @@ def login():
                 return redirect("/home")
     return render_template("login.html",form=form)
 
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit() and request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
+        first_name = request.form["first_name"]
+        last_name = request.form["last_name"]
+        user = UserModel.query.filter_by(email=email).first()
+        if user is None:
+            add_user(email=email, first_name=first_name, last_name=last_name, password=password)
+            flash(f"Thank you for registering, {first_name}!", 'success')
+            return redirect('/login')
+        elif user is not None and user.check_password(password):
+            flash("Welcome back!", 'success')
+            login_user(user)
+            return redirect('/dashboard')
+        else:
+            flash("User already exists and you used an incorrect password.", 'error')
+    return render_template("/user/register.html", form=form)
 
 @app.route("/logout")
 def logout():
