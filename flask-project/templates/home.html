@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% set active_page = 'home' %}
+{% block title %} Home {% endblock %}
+{% block content %}
+
+<h4>Search for people's birthdays, it's definitely a not a Russian data mining project</h4>
+
+<div>
+    <form method="post">
+        {{form.csrf_token}}
+        <div class="group d-flex">
+            <fieldset class="form-field px-2">
+                {{ form.birthday.label(class="form-label") }}
+                {{ form.birthday(class="form-control") }}
+                {% if form.birthday.errors %}
+                <ul class="errors">
+                    {% for error in form.birthday.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </fieldset>
+            <fieldset class="form-field px-2">
+                {{ form.num_results.label(class="form-label") }}
+                {{ form.num_results(class="form-control") }}
+                {% if form.num_results.errors %}
+                <ul class="errors">
+                  {% for error in form.num_results.errors %}
+                  <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+            </fieldset>
+            {{form.submit(class="btn btn-danger px-2 mt-auto")}}
+        </form>
+    </div>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+      <th scope="col">Birth Year</th>
+    </tr>
+  </thead>
+  <tbody>
+
+        {% for person in results %}
+        <tr>
+            <td class="align-middle">{{loop.index0 + 1}}</td>
+            <td class="align-middle"><img src= {{ person['thumbnail'] }} class='img-thumbnail' alt='portrait' style="max-height:50px;max-width:50px;"> {{person['text']}}</td>
+            <td class="align-middle">{{person['year']}}</td>
+        </tr>
+        {% endfor %}
+
+  </tbody>
+</table>
+ {% endblock %}
