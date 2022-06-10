@@ -28,7 +28,6 @@ def add_user(email, username, password):
     # check if email exists
     user = UserModel.query.filter_by(email=email).first()
     if user is None:
-
         # create db entry and submit
         user = UserModel()
         user.set_password(password)
@@ -42,11 +41,11 @@ def add_user(email, username, password):
 @app.before_first_request
 def create_table():
     db.create_all()
-    user = UserModel.query.filter_by(email = "lhhung@uw.edu").first()
+    user = UserModel.query.filter_by(email="lhhung@uw.edu").first()
     if user is None:
-        add_user("lhhung@uw.edu","qwerty")
+        add_user("lhhung@uw.edu","lhhung","qwerty")
 
-@app.route("/")
+@app.route("/home")
 @login_required
 def display_home():
     return render_template("home.html")
@@ -82,7 +81,7 @@ def register():
         elif user is not None and user.check_password(password):
             login_user(user)
             return redirect('/dashboard')
-    return render_template("/user/register.html", form=form)
+    return render_template("/register.html", form=form)
 
 @app.route("/logout")
 def logout():
