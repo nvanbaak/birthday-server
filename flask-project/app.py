@@ -2,7 +2,8 @@ import email
 from flask import Flask, render_template, request, redirect
 from flask_login import login_user, login_required, logout_user
 from models import db, login, UserModel
-from forms.login_form import loginForm, RegisterForm
+from forms.login_form import loginForm, RegisterForm, BirthDateForm
+import wiki
 
 #####################################
 #    Flask boilerplate from demo
@@ -45,10 +46,19 @@ def create_table():
     if user is None:
         add_user("lhhung@uw.edu","lhhung","qwerty")
 
-@app.route("/home")
+@app.route("/home", methods=["GET","POST"])
 @login_required
 def display_home():
-    return render_template("home.html")
+    form = BirthDateForm()
+    if form.validate_on_submit():
+        if request.method == "POST":
+            birthday = request.form["birthday"]
+            monthDay = f"{birthday[5:7]}/{birthday[8:10]}"
+            year = birthday[0:4]
+            size = request.form["num_results"]
+            results = wiki.findBirths(monthDay=monthDay, year=year, size=size)
+            return render_template("home.html", form=form, results=results)
+    return render_template("home.html", form=form, results=wiki.findBirths(monthDay="02/12", year="1809", size=10))
 
 @app.route("/")
 def redirect_to_login():
