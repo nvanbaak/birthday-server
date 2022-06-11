@@ -6,7 +6,7 @@ services:
     restart: always
     build: ./flask-project
     volumes:
-      - "/506/birthday-server/flask-project:/"
+      - "/506/birthday-server:"
     ports:
       - "8000:8000"
     command: gunicorn -w 1 -b 0.0.0.0:8000 wsgi:app
