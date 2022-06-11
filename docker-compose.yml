@@ -6,10 +6,10 @@ services:
     restart: always
     build: ./flask-project
     volumes:
-      - "/home/ubuntu/506/birthday-server:/local"
+      - "/home/ubuntu/flask-project:/local"
     ports:
       - "8000:8000"
-    command: gunicorn -w 1 -b 0.0.0.0:8000 wsgi:app
+    command: gunicorn -w 1 -b 0.0.0.0:8000 /home/ubuntu/birthday-server/flask-project/wsgi:app
 
   nginx:
     container_name: nginx
