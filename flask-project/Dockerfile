@@ -6,10 +6,11 @@ WORKDIR /usr/src/flask-project
 #copy all the files into this directory including requirements.txt
 COPY . .
 
-RUN python -m venv venv
-RUN venv/bin/pip3 install -r requirements.txt
-RUN venv/bin/ipi3 install gunicorn
+#we upgrade pip to the latest version 
+RUN pip3 install --upgrade pip
 
-ENV FLASK_APP app.py
+#run pip and install all the packages in requirements.txt - you can specify specific versions this way
+RUN pip3 install -r requirements.txt
 
-CMD gunicorn -w 3 -b 0.0.0.0:8080 ./wsgi.py --reload
+#default command
+CMD python app.py
