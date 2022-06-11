@@ -21,4 +21,4 @@ RUN pip3 install -r requirements.txt
 #default command
 # CMD python wsgi.py
 
-CMD gunicorn -w 3 -b 0.0.0.0:8080 ./wsgi --reload
+CMD gunicorn -w 3 -b 0.0.0.0:8080 ./wsgi.py --reload
