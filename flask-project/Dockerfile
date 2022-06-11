@@ -19,4 +19,4 @@ RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
 #default command
-CMD python app.py
+CMD python wsgi.py
